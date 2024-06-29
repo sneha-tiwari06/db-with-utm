@@ -63,8 +63,12 @@ app.post('/api/contact', extractUTMParams, async (req, res) => {
         await transporter.sendMail(mailOptions);
 
         const query = 'INSERT INTO contact_table (name, email, time, needs, phone, utm_source, utm_medium, utm_term, utm_campaign, utm_content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const values = [name, email, time, needs, phone, utm_source, utm_medium, utm_term, utm_campaign, utm_content];
 
-        db.query(query, [name, email, phone, time, needs, utm_source, utm_medium, utm_term, utm_campaign, utm_content], (err, result) => {
+        console.log('Executing query:', query);
+        console.log('With values:', values);
+
+        db.query(query, values, (err, result) => {
             if (err) {
                 console.error('Failed to save email to database', err);
                 return res.status(500).send({ success: false, message: 'Failed to save email to database' });
@@ -76,6 +80,7 @@ app.post('/api/contact', extractUTMParams, async (req, res) => {
         res.status(500).send('Error sending email');
     }
 });
+
 app.post('/api/book', async (req, res) => {
     const { fullName, mobileNumber, email, agree } = req.body;
     const { utm_source, utm_medium, utm_campaign, utm_term, utm_content } = req;
